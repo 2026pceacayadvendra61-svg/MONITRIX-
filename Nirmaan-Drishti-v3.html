@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nirmaan Drishti</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Layout: dark sidebar + wide content column; risk and money first, detail behind tabs. Tricolour hairline is the one national cue. */
+:root{
+  --bg:#edf1f6; --panel:#ffffff; --ink:#172333; --mute:#5d6c80; --line:#dfe5ed;
+  --acc:#315eea; --accsoft:#e8edff; --on:#ffffff;
+  --ok:#16865d; --okb:#e0f5eb; --warn:#9a6208; --warnb:#fff2d8; --bad:#c83e3a; --badb:#fde7e5;
+  --side:#152131; --side2:#1d2d41; --sideink:#aebbd0; --sideline:#2b3949; --sideacc:#829cff; --sideon:#0e151e;
+  --shadow:0 8px 28px rgba(20,38,60,.06);
+  --hd:'Bricolage Grotesque',system-ui,sans-serif; --bd:'Figtree',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e151e; --panel:#17222e; --ink:#edf3fb; --mute:#9ba9ba; --line:#2b3949; --acc:#829cff; --accsoft:#26345b; --on:#0e151e;
+  --ok:#59d4a1; --okb:#15392d; --warn:#f0bc58; --warnb:#3a2d16; --bad:#ff8e87; --badb:#412321;
+  --side:#09111a; --side2:#172433; --shadow:0 8px 28px rgba(0,0,0,.18); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e151e; --panel:#17222e; --ink:#edf3fb; --mute:#9ba9ba; --line:#2b3949; --acc:#829cff; --accsoft:#26345b; --on:#0e151e;
+  --ok:#59d4a1; --okb:#15392d; --warn:#f0bc58; --warnb:#3a2d16; --bad:#ff8e87; --badb:#412321;
+  --side:#09111a; --side2:#172433; --shadow:0 8px 28px rgba(0,0,0,.18); color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--bd);min-height:100vh}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--side);z-index:50}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-family:var(--hd);letter-spacing:-.025em;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+[hidden]{display:none!important}
+.muted{color:var(--mute)} .small{font-size:12px} .num{font-variant-numeric:tabular-nums} .mono{font-family:var(--mono);font-size:.9em}
+.tri{height:5px;background:linear-gradient(90deg,#ff9933 0 33.3%,#ffffff 33.3% 66.6%,#138808 66.6%);position:relative;z-index:30}
+.logo{display:flex;align-items:center;gap:10px;font:700 21px var(--hd);letter-spacing:-.02em}
+.mark{width:30px;height:30px;border-radius:9px;background:var(--acc);display:grid;place-items:center;flex:none}
+.mark::after{content:"";width:13px;height:13px;border:3px solid var(--on);border-left-color:transparent;border-radius:50%;transform:rotate(-25deg)}
+.ic{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* auth */
+#auth{min-height:calc(100vh - 5px);display:grid;grid-template-columns:1.05fr 1fr}
+.show{background:radial-gradient(circle at 18% 18%,#304e7b 0,transparent 40%),var(--side);color:#fff;padding-block:clamp(26px,5vw,60px);padding-left:max(clamp(22px,5vw,60px),env(safe-area-inset-left,0px));padding-right:clamp(22px,5vw,60px);display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+.show .mark{background:var(--sideacc)} .show .mark::after{border-color:var(--sideon);border-left-color:transparent}
+.show h1{font-size:clamp(34px,4.4vw,58px);line-height:1.04;max-width:12ch;margin-bottom:16px}
+.show p{color:#b8c5d6;max-width:44ch;font-size:17px}
+.feat{display:grid;gap:12px;margin-top:26px;color:#d6e0ed}
+.feat span{display:flex;gap:10px;align-items:center}
+.feat span::before{content:"✓";display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#28415c;color:#9ab5ff;font-size:13px;flex:none}
+.fw{display:grid;place-items:center;padding-block:30px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+#af{width:100%;max-width:400px}
+#af h2{font-size:31px;margin-bottom:6px}
+#af>p{color:var(--mute);margin-bottom:18px}
+.fl{margin-top:14px}.fl label{display:block;font-size:13px;font-weight:700}
+.in{display:block;width:100%;margin-top:6px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.in:focus{border-color:var(--acc)}
+textarea.in{resize:vertical}
+.btn{border:0;border-radius:10px;padding:10px 15px;background:var(--acc);color:var(--on);font-weight:700;display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.btn:hover{filter:brightness(1.07)}
+.btn.sec{background:var(--accsoft);color:var(--acc)} .btn.out{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.btn.dng{background:var(--badb);color:var(--bad)} .btn.w{width:100%;margin-top:20px;padding:13px}
+.btn.sm{padding:6px 11px;font-size:13px}
+.btn[disabled]{opacity:.55;cursor:default}
+.lk{border:0;background:none;color:var(--acc);font-weight:700;padding:0}
+.lk.c{display:block;margin:14px auto 0}
+.nt{padding:10px 12px;border-radius:9px;background:var(--badb);color:var(--bad);margin-top:12px;font-size:13px}
+.demo{margin-top:20px;padding:13px;border:1px dashed var(--line);border-radius:12px;font-size:13px;color:var(--mute)}
+.demo div{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.demo .btn{flex:1;white-space:nowrap}
+/* shell */
+#app{display:grid;grid-template-columns:244px minmax(0,1fr);min-height:calc(100vh - 5px)}
+aside{background:var(--side);color:var(--sideink);padding:20px 13px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+aside .logo{color:#fff;margin:2px 9px 26px}
+aside .mark{background:var(--sideacc)} aside .mark::after{border-color:var(--sideon);border-left-color:transparent}
+#nav{display:grid;gap:4px;align-content:start;flex:1}
+#nav button,.sb{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:inherit;text-align:left;padding:10px 12px;border-radius:10px;font-weight:600}
+#nav button:hover,.sb:hover{background:var(--side2);color:#fff}
+#nav button.on{background:var(--sideacc);color:var(--sideon)}
+.cnt{margin-left:auto;background:#c83e3a;color:#fff;border-radius:20px;padding:0 7px;font-size:11px;line-height:18px}
+.sbot{border-top:1px solid var(--sideline);padding-top:12px;margin-top:16px}
+.ub{display:flex;align-items:center;gap:10px;padding:10px 6px 0}
+.av{width:37px;height:37px;display:grid;place-items:center;border-radius:50%;background:#31517d;color:#fff;font-weight:700;flex:none}
+.um{min-width:0;flex:1}.um b{display:block;color:#fff;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.um small{display:block;font-size:11px;color:#91a0b5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+main{min-width:0;padding-block:28px 60px;padding-left:max(clamp(16px,3vw,38px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,3vw,38px),env(safe-area-inset-right,0px))}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.eye{font-size:12px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.top h1{font-size:30px;margin-top:2px}
+.top p{font-size:13.5px;color:var(--mute);margin-top:3px}
+.acts{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.ibtn{width:41px;height:41px;border:1px solid var(--line);border-radius:10px;background:var(--panel);display:grid;place-items:center}
+.welcome{display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;padding:22px 26px;border-radius:16px;background:linear-gradient(115deg,#254bc5,#4778f1);color:#fff;margin-bottom:18px;overflow:hidden;position:relative}
+.welcome::after{content:"";position:absolute;width:220px;height:220px;border:1px solid #ffffff2a;border-radius:50%;right:12%;top:-125px;box-shadow:0 0 0 25px #ffffff0d,0 0 0 50px #ffffff0a;pointer-events:none}
+.welcome h2{font-size:23px;margin-bottom:4px}
+.welcome p{color:#e0e8ff;font-size:14px;max-width:60ch}
+.welcome .btn{background:#fff;color:#254bc5;position:relative;z-index:1}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.stats.s4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0;box-shadow:var(--shadow)}
+.card h3{font-size:17px}
+.ct{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}
+.ct p{font-size:12px;color:var(--mute);margin-top:2px}
+.sh{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mute);font-size:13px;font-weight:600}
+.si{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--accsoft);color:var(--acc);flex:none}
+.si.bad{background:var(--badb);color:var(--bad)} .si.ok{background:var(--okb);color:var(--ok)} .si.warn{background:var(--warnb);color:var(--warn)}
+.sn{font:700 27px var(--hd);margin-top:10px;line-height:1.15;letter-spacing:-.02em}
+.sf{font-size:12px;color:var(--mute);margin-top:6px}
+.lay{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px;margin-bottom:16px;align-items:start}
+.stack{display:grid;gap:16px;align-content:start}
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--okb);color:var(--ok)} .pill.warn{background:var(--warnb);color:var(--warn)} .pill.bad{background:var(--badb);color:var(--bad)} .pill.blue{background:var(--accsoft);color:var(--acc)}
+.tl{border:0;background:none;color:var(--acc);font-size:13px;font-weight:700;white-space:nowrap;padding:0}
+.row{display:grid;grid-template-columns:5px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:13px 0}
+.row:first-of-type{border-top:0;padding-top:0}
+.row .st{align-self:stretch;border-radius:4px;background:var(--line)}
+.row.bad .st{background:var(--bad)}.row.warn .st{background:#e8801a}.row.ok .st{background:var(--ok)}
+.row b{display:block}.row:hover b{color:var(--acc)}
+.ev{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line)}
+.ev:first-of-type{border-top:0;padding-top:0}
+.evd{width:32px;height:32px;border-radius:10px;background:var(--accsoft);color:var(--acc);display:grid;place-items:center;flex:none;font-weight:700;font-size:13px}
+.ev b{font-size:13px;display:block}.ev p{font-size:12px;color:var(--mute)}
+.bar{height:8px;background:var(--line);border-radius:8px;margin-top:7px;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--acc);border-radius:8px}
+.bar.wn i{background:#e8801a}.bar.bd i{background:var(--bad)}.bar.gd i{background:var(--ok)}
+.bar u{position:absolute;top:-4px;bottom:-4px;width:3px;background:var(--ink);border-radius:2px;text-decoration:none}
+.pm{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;flex-wrap:wrap}
+.pb{margin-top:15px}.pb:first-of-type{margin-top:0}
+.lg{display:flex;gap:16px;font-size:12px;color:var(--mute);margin-top:14px;flex-wrap:wrap}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.fb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:15px}
+.fb .search{flex:1;min-width:170px;padding:10px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.sel{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:9px 10px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+th{text-align:left;padding:10px;color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line)}
+td{padding:13px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border:0}
+td small{display:block;color:var(--mute);font-size:11.5px}
+td.n,th.n{text-align:right}
+.pg{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,350px),1fr))}
+.pc{text-align:left;width:100%;display:block;cursor:pointer}
+.pc:hover{border-color:var(--acc)}
+.pc h3{margin-bottom:3px;font-size:16px}
+.mt{display:flex;flex-wrap:wrap;gap:3px 14px;font-size:12px;color:var(--mute)}
+.empty{padding:26px 12px;text-align:center;color:var(--mute);font-size:13px}
+.back{border:0;background:none;color:var(--acc);font-weight:700;padding:0;margin-bottom:14px}
+.dtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.dtabs button{border:0;background:none;padding:10px 14px;font-weight:600;color:var(--mute);border-bottom:2px solid transparent;white-space:nowrap}
+.dtabs button.on{color:var(--acc);border-color:var(--acc)}
+.fg{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
+.fg:first-of-type{border-top:0;padding-top:0}
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:13px 18px;margin:0}
+.dl dt{font-size:12px;color:var(--mute)}.dl dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.chart{width:100%;height:auto;display:block}
+.chart text{font:11px var(--bd);fill:var(--mute)}
+.gl{stroke:var(--line);stroke-width:1}
+.task{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.task:first-child{border-top:0;padding-top:0}
+.task input{margin-top:4px;accent-color:var(--acc);width:17px;height:17px;flex:none}
+.tb{flex:1;min-width:0}.tb b{display:block;font-size:14px}.tb small{color:var(--mute);font-size:12px}
+.task.done b{text-decoration:line-through;color:var(--mute)}
+.ph{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ph img{width:78px;height:78px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer;display:block}
+.thb{border:0;padding:0;background:none}
+.sg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.srow{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:0}
+.sw{width:44px;height:25px;border:0;border-radius:20px;background:var(--line);padding:3px;flex:none}
+.sw::after{content:"";display:block;width:19px;height:19px;background:#fff;border-radius:50%;transition:transform .2s}
+.sw.on{background:var(--acc)}.sw.on::after{transform:translateX(19px)}
+.mb{position:fixed;inset:0;background:#08111dcc;display:grid;place-items:center;padding:16px;z-index:60}
+.md{width:min(520px,100%);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mh h2{font-size:21px}
+.x{border:0;background:none;font-size:26px;line-height:1;color:var(--mute)}
+.ma{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;flex-wrap:wrap}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.live{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+.live .fg{padding:7px 0;grid-template-columns:auto minmax(0,1fr)}
+.big{max-width:100%;display:block;border-radius:8px;margin-top:10px}
+.doc{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--bg);margin-top:8px}
+.doc hr{border:0;border-top:1px dashed var(--line);margin:10px 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--panel);padding:11px 16px;border-radius:11px;z-index:70;box-shadow:var(--shadow);max-width:90%;font-size:13px}
+@media (max-width:1100px){.stats,.stats.s4,.stats.s5{grid-template-columns:repeat(2,minmax(0,1fr))}.stats>.card:last-child:nth-child(odd){grid-column:1/-1}.lay{grid-template-columns:1fr}#app{grid-template-columns:210px minmax(0,1fr)}}
+@media (max-width:760px){
+  #auth{grid-template-columns:1fr}.show{gap:24px}.feat{display:none}.show h1{font-size:36px}
+  #app{display:block}
+  aside{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;height:auto;padding:10px 12px;overflow:visible;display:block}
+  aside .logo{font-size:18px;margin:0 0 8px 2px}
+  #nav{display:flex;overflow-x:auto;gap:4px}
+  #nav button{white-space:nowrap;padding:9px 11px;font-size:13px;gap:7px;width:auto}
+  .sbot{display:none}
+  main{padding-block:18px 44px}
+  .top h1{font-size:26px}.welcome{padding:18px}
+  .sg{grid-template-columns:1fr}.mg{grid-template-columns:1fr}
+}
+@media (max-width:420px){.stats{gap:10px}.sn{font-size:23px}.stats .sh{font-size:11.5px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  :root{--ink:#111;--panel:#fff;--mute:#555;--line:#ccc;--bg:#fff}
+  aside,#mr,#ts,.back,.dtabs,.acts,.tl,.btn,.tri,body::before{display:none!important}
+  #app{display:block}main{padding:0}.card{break-inside:avoid;box-shadow:none}body{background:#fff}
+}
+</style>
+
+<style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}</style>
+</head><body>
+<div class="tri" aria-hidden="true"></div>
+<section id="auth" hidden>
+  <div class="show">
+    <div class="logo"><span class="mark"></span>Nirmaan Drishti</div>
+    <div>
+      <h1>Every tender, tracked to the last rupee.</h1>
+      <p>See which department floated each tender, which company won it, and where every rupee of the budget went, bill by bill.</p>
+      <div class="feat"><span>Automatic checks on every expense</span><span>Duplicate and missing bills flagged instantly</span><span>One shared record for departments and contractors</span></div>
+    </div>
+    <p class="small" style="color:#8fa0b5">Prototype build for pilot testing.</p>
+  </div>
+  <div class="fw"><form id="af" novalidate>
+    <button class="lk" id="bk" type="button" hidden style="margin-bottom:14px">← Back to sign in</button>
+    <h2 id="at">Welcome back</h2><p id="as">Sign in to continue to your workspace.</p>
+    <div id="ae" class="nt" role="alert" hidden></div>
+    <div id="su" hidden>
+      <div class="fl"><label for="nm">Full name</label><input class="in" id="nm" autocomplete="name"></div>
+      <div class="fl"><label for="ro">I am signing up as</label><select class="in" id="ro"><option value="co">A contractor company</option><option value="gov">A government department</option></select></div>
+      <div class="fl"><label for="og" id="ol">Company name</label><input class="in" id="og"></div>
+      <div id="rgw"><div class="fl"><label for="rg">Company registration number</label><input class="in" id="rg"></div><div class="fl"><label for="gs">GST number</label><input class="in" id="gs" maxlength="15" placeholder="15 characters"></div></div>
+    </div>
+    <div class="fl"><label for="em">Work email</label><input class="in" id="em" type="email" autocomplete="email" placeholder="you@company.com"></div>
+    <div class="fl"><label for="pw">Password</label><input class="in" id="pw" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div>
+    <button class="btn w" id="sb" type="submit">Sign in</button>
+    <button class="lk c" id="sw" type="button">New here? Create an account</button>
+    <div class="demo" id="dm"><b>Demo workspace</b><br>Sample accounts use the password <span class="mono">demo123</span>. Your changes are saved in this browser.<div><button class="btn sec" type="button" data-d="ugov">Government officer</button><button class="btn sec" type="button" data-d="ucomp">Contractor</button></div></div>
+  </form></div>
+</section>
+<div id="app" hidden>
+  <aside>
+    <div class="logo"><span class="mark"></span>Nirmaan Drishti</div>
+    <nav id="nav" aria-label="Sections"></nav>
+    <div class="sbot">
+      <button class="sb" data-a="theme" type="button" id="sideTheme"></button>
+      <div class="ub"><div class="av" id="av">G</div><div class="um"><b id="un"></b><small id="uo"></small></div></div>
+    </div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="mr"></div><div id="ts" class="toast" role="status" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const mem = {};
+const ST = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return mem[k] ?? null; } },
+  set(k,v){ try { localStorage.setItem(k,v); return true; } catch(e){ mem[k] = v; return false; } },
+  del(k){ try { localStorage.removeItem(k); } catch(e){ delete mem[k]; } }
+};
+const K = 'gt_db3', S = 'gt_ses3', TH = 'gt_theme3';
+const SECT = ['Roads & Highways','Water Resources','Health','Education','Energy','Housing & Urban'];
+const CAT = ['Material','Labour','Equipment','Transport','Permits','Other'];
+const LB = {bad:'Needs review',warn:'Watch',ok:'Clear'}, SV = {high:['bad','High'],med:['warn','Medium'],low:['blue','Note']};
+const uid = () => Math.random().toString(36).slice(2,9);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf = new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
+const inr = n => nf.format(n || 0);
+const cr = n => n >= 1e7 ? '₹' + (n/1e7).toFixed(2) + ' Cr' : n >= 1e5 ? '₹' + (n/1e5).toFixed(1) + ' L' : inr(n);
+const dt = s => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? '–' : d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); };
+const pad = n => String(n).padStart(2,'0');
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); };
+const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); };
+const sum = a => a.reduce((s,x) => s + x, 0);
+const same = (a,b) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
+const gok = s => /^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$/.test(s);
+const ICONS = {
+  home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  tenders:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  projects:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  tasks:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/>',
+  cos:'<path d="M4 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M14 9h5a1 1 0 0 1 1 1v11M3 21h18M8 8h2M8 12h2M8 16h2"/>',
+  reports:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  settings:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h0"/>',
+  rupee:'<path d="M7 5h10M7 10h10M7 5c5 0 7 2 7 5s-3 5-7 5l6 5"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
+  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>',
+  swap:'<path d="M7 7h13l-4-4M17 17H4l4 4"/>',
+  out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
+};
+const ic = n => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[n] + '</svg>';
+
+/* ---------- data ---------- */
+function seed(){
+  const c = [
+    {id:'c1',n:'Rathore Infra Pvt Ltd',r:'U45200RJ2015PTC048211',ct:'Jaipur',gst:'08AABCR1234K1Z5'},
+    {id:'c2',n:'Shekhawati Constructions',r:'U45309RJ2012PTC039884',ct:'Sikar',gst:'08AAECS4321L1Z8'},
+    {id:'c3',n:'AquaFlow Engineers',r:'U74999RJ2018PTC061307',ct:'Jodhpur',gst:'08AAFCA9876M1Z2'}];
+  const t = [
+    ['t1','Jaipur–Sikar road widening, Package 2','Public Works Department','Roads & Highways',185e6,'c1','2026-03-01','2027-02-28',42,'Sikar, Rajasthan','Widening of a 38 km state highway to four lanes with drainage and shoulders.'],
+    ['t2','Canal lining, Phase 3','Water Resources Department','Water Resources',98e6,'c3','2026-04-01','2027-03-31',30,'Jodhpur, Rajasthan','Concrete lining of 24 km of distributary canal to cut seepage losses.'],
+    ['t3','District hospital block, Bhilwara','Medical and Health Department','Health',142e6,'c2','2026-02-15','2027-04-30',55,'Bhilwara, Rajasthan','Construction of a 150-bed hospital block with operation theatres.'],
+    ['t4','Smart classrooms for 120 schools','Education Department','Education',42e6,'','2026-11-10','2027-06-30',0,'Statewide','Smart boards and internet connectivity for classrooms in 120 government schools.'],
+    ['t5','Solar rooftops on government buildings','Energy Department','Energy',65e6,'','2026-12-01','2027-09-30',0,'Statewide','Rooftop solar plants on government buildings, 12 MW in total.']
+  ].map(([id,title,dept,sec,val,co,s,e,prog,loc,desc],i) => ({id,no:'TN/2026/00' + (i+1),title,dept,sec,val,co,s,e,prog,loc,desc}));
+  const exp = [
+    ['e1','t1','2026-04-12','Material',31240000,'Sharma Bitumen','Sikar','B-1001'],
+    ['e2','t1','2026-05-20','Labour',13860000,'Site muster payroll','Sikar','B-1002'],
+    ['e3','t1','2026-06-18','Equipment',22075000,'Bhati Machinery','Jaipur','B-1003'],
+    ['e4','t1','2026-08-02','Material',18110000,'Aravali Bitumen','Sikar','B-1004'],
+    ['e5','t1','2026-09-10','Transport',5520000,'Marwar Logistics','Jaipur','B-1005'],
+    ['e6','t1','2026-09-28','Permits',3050000,'PWD fees','Jaipur','B-1006'],
+    ['e7','t2','2026-05-14','Material',21800000,'Marudhar Cement','Jodhpur','B-2291'],
+    ['e8','t2','2026-07-01','Labour',9640000,'Site muster payroll','Jodhpur','B-2002'],
+    ['e9','t2','2026-08-19','Equipment',14200000,'Thar Earthmovers','Jodhpur','B-2003'],
+    ['e10','t2','2026-10-05','Other',5000000,'Om Traders','Jodhpur',''],
+    ['e11','t3','2026-04-03','Material',38200000,'Marudhar Cement','Bhilwara','B-2291'],
+    ['e12','t3','2026-06-25','Labour',24500000,'Site muster payroll','Bhilwara','B-3002'],
+    ['e13','t3','2026-08-14','Equipment',16300000,'Mewar Cranes','Bhilwara','B-3003'],
+    ['e14','t3','2026-09-30','Other',9400000,'Hindustan Electricals','Bhilwara','B-3004']
+  ].map(([id,t,d,c,amt,v,pl,bill]) => ({id,t,d,c,amt,v,pl,bill,vg:'',nt:'',sc: bill ? 'sample' : '',by:'Site team'}));
+  const rep = [
+    ['r1','t1','2026-10-24','Laid granular sub-base from km 14 to km 16 and finished two culvert headwalls.','',46,40],
+    ['r2','t1','2026-10-26','Started wet mix macadam on km 14. Cement and bitumen stock checked and logged.','Rain stopped work for two hours in the afternoon.',52,41],
+    ['r3','t1','2026-10-27','Completed wet mix macadam on 1.2 km. Surveyed levels for the next stretch.','',55,42],
+    ['r4','t2','2026-10-22','Lining crew moved to chainage 11 to 12 after a two-day delay on shuttering.','Shuttering material arrived late.',38,30],
+    ['r5','t3','2026-10-22','Third floor slab cast and cured. Electrical conduits laid on second floor.','',61,55]
+  ].map(([id,t,d,w,is,wk,p]) => ({id,t,d,w,is,wk,p,ph:[],by:'Site team'}));
+  const dc = [{id:'d1',t:'t1',d:'2026-03-02',ti:'Work order WO/2026/114',ty:'Work order',f:'sample',by:'Rajesh Meena'}];
+  const tk = [
+    {id:'k1',title:'Explain duplicate bill B-2291 booked on two projects',p:'t2',due:'2026-11-05',pr:'High',done:false,as:'AquaFlow Engineers',by:'Rajesh Meena'},
+    {id:'k2',title:'Attach bill and scan for the ₹50.0 L Om Traders expense',p:'t2',due:'2026-11-03',pr:'High',done:false,as:'AquaFlow Engineers',by:'Rajesh Meena'},
+    {id:'k3',title:'Confirm bitumen delivery dates for the next stretch',p:'t1',due:'2026-11-06',pr:'Medium',done:false,as:'Rathore Infra Pvt Ltd',by:'Site team'},
+    {id:'k4',title:'Post this week’s site photos',p:'t3',due:'2026-11-02',pr:'Low',done:false,as:'Shekhawati Constructions',by:'Rajesh Meena'},
+    {id:'k5',title:'Review structural drawings for the third floor',p:'t3',due:'2026-10-20',pr:'Medium',done:true,as:'Shekhawati Constructions',by:'Rajesh Meena'}
+  ];
+  const now = Date.now();
+  return {c,t,exp,rep,dc,tk,
+    u:[{id:'ugov',name:'Rajesh Meena',email:'officer@demo.gov',role:'gov',org:'Public Works Department',h:''},
+       {id:'ucomp',name:'Vikram Rathore',email:'site@rathoreinfra.demo',role:'co',org:'Rathore Infra Pvt Ltd',co:'c1',h:''}],
+    log:[
+      {id:'l1',t:now-36e5,w:'Site team',m:'Booked ₹50.0 L to Om Traders on Canal lining, Phase 3 with no bill number'},
+      {id:'l2',t:now-9e7,w:'Rajesh Meena',m:'Floated tender Solar rooftops on government buildings'},
+      {id:'l3',t:now-18e7,w:'Site team',m:'Updated Jaipur–Sikar road widening to 42% complete'}]};
+}
+function load(){
+  try { const d = JSON.parse(ST.get(K)); if (d && ['c','t','exp','u','log'].every(k => Array.isArray(d[k]))) { d.rep = d.rep || []; d.dc = d.dc || []; d.tk = d.tk || []; return d; } } catch(e){}
+  return seed();
+}
+let db = load(), me = null, page = 'home', pid = null, tab = 'sum', mode = 'in', tt, xfer = null;
+const F = {q:'',sec:'',ts:'',ps:'',tf:''};
+const save = () => { if (!ST.set(K, JSON.stringify(db))) toast('Browser storage is full or off. Changes last until you close this page.'); };
+const log = (m,w) => { db.log.unshift({id:uid(),t:Date.now(),w:w || (me ? me.name : 'System'),m}); db.log = db.log.slice(0,30); };
+function toast(m){ const e = $('#ts'); e.textContent = m; e.hidden = false; clearTimeout(tt); tt = setTimeout(() => e.hidden = true, 3200); }
+async function hash(e,p){
+  const s = e + '|' + p;
+  try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join(''); }
+  catch(_){ return btoa(unescape(encodeURIComponent(s))); }
+}
+
+/* ---------- automatic checks ---------- */
+const dupOf = e => e.bill ? db.exp.find(o => o.id !== e.id && same(o.bill,e.bill)) : null;
+const later = (e,o) => o.d < e.d || (o.d === e.d && o.id < e.id);
+const dupLater = e => { const o = dupOf(e); return !!o && later(e,o); };
+const coName = id => (db.c.find(c => c.id === id) || {}).n || 'Open for bidding';
+const getT = id => db.t.find(t => t.id === id);
+function an(t){
+  const ex = db.exp.filter(e => e.t === t.id), sp = sum(ex.map(e => e.amt)), pc = t.val ? sp / t.val * 100 : 0, f = [];
+  if (sp > t.val) f.push({s:'high',m:'Spending has crossed the approved budget by ' + inr(sp - t.val) + '.'});
+  ex.filter(e => dupOf(e)).forEach(e => { const o = dupOf(e), ot = getT(o.t);
+    f.push({s:'high',x:e.id,m:'Bill ' + e.bill + ' (' + inr(e.amt) + ') is also booked on ' + (o.t === t.id ? 'this project' : (ot ? ot.title : 'another project')) + ' on ' + dt(o.d) + '.'}); });
+  const nb = ex.filter(e => !e.bill);
+  if (nb.length) f.push({s:'med',m:nb.length + (nb.length > 1 ? ' expenses have' : ' expense has') + ' no bill number (' + cr(sum(nb.map(e => e.amt))) + ').'});
+  if (sp > 0 && pc - t.prog > 15) f.push({s:'med',m:'Spent ' + Math.round(pc) + '% of the budget but only ' + t.prog + '% of the work is reported done.'});
+  const ns = ex.filter(e => !e.sc).length;
+  if (ns) f.push({s:'med',m:ns + (ns > 1 ? ' expenses have' : ' expense has') + ' no scanned bill attached.'});
+  const vm = {}; ex.forEach(e => vm[e.v] = (vm[e.v] || 0) + e.amt);
+  const tv = Object.entries(vm).filter(([k]) => !/payroll|fees/i.test(k)).sort((a,b) => b[1] - a[1])[0];
+  if (tv && ex.length >= 3 && tv[1] / sp > .5) f.push({s:'med',m:tv[0] + ' received ' + Math.round(tv[1] / sp * 100) + '% of all spending.'});
+  const lr = db.rep.filter(r => r.t === t.id).map(r => r.d).sort().pop();
+  if (t.co && t.s <= today() && t.prog < 100 && (!lr || (Date.now() - new Date(lr + 'T00:00:00')) / 864e5 > 7))
+    f.push({s:'low',m: lr ? 'No daily update since ' + dt(lr) + '.' : 'No daily update has been posted yet.'});
+  const rf = ex.filter(e => e.amt >= 1e6 && e.amt % 5e5 === 0);
+  if (rf.length) f.push({s:'low',m:rf.length + (rf.length > 1 ? ' round-figure expenses are' : ' round-figure expense is') + ' worth a second look.'});
+  const rank = {high:0,med:1,low:2}; f.sort((a,b) => rank[a.s] - rank[b.s]);
+  const lv = f.some(x => x.s === 'high') ? 'bad' : f.some(x => x.s === 'med') ? 'warn' : 'ok';
+  const q = sum(ex.filter(e => dupLater(e) || !e.bill).map(e => e.amt));
+  const score = Math.min(100, sum(f.map(x => x.s === 'high' ? 35 : x.s === 'med' ? 15 : 4)));
+  return {ex,sp,pc,f,lv,q,score};
+}
+const mine = () => db.t.filter(t => t.co && (me.role === 'gov' || t.co === me.co));
+const visTasks = () => { const ids = mine().map(p => p.id); return db.tk.filter(k => k.p ? ids.includes(k.p) : me.role === 'gov'); };
+const pill = (c,t) => '<span class="pill ' + c + '">' + esc(t) + '</span>';
+const bar = (p,c,w) => '<div class="bar ' + (c || '') + '"><i style="width:' + Math.max(0,Math.min(100,p)) + '%"></i>' + (w != null ? '<u style="left:calc(' + Math.max(0,Math.min(100,w)) + '% - 1px)"></u>' : '') + '</div>';
+const barCls = (a,p) => a.lv === 'bad' ? 'bd' : (a.pc - p.prog > 15 ? 'wn' : '');
+
+/* ---------- session ---------- */
+const PAGES = ['home','tenders','projects','tasks','cos','reports','settings'], TABS = ['sum','rep','exp','doc','tsk','his'];
+let hidx = 0;
+const resetF = () => Object.assign(F,{q:'',sec:'',ts:'',ps:'',tf:''});
+const hashOf = () => (pid && page === 'projects') ? 'v-project-' + pid + (tab === 'sum' ? '' : '-' + tab) : 'v-' + page;
+function applyHash(){
+  const h = (location.hash || '').slice(1); let pg = 'home', id = null, tb = 'sum';
+  if (h.startsWith('v-project-')) { const r = h.slice(10).split('-'); pg = 'projects'; if (db.t.some(t => t.id === r[0])) { id = r[0]; if (TABS.includes(r[1])) tb = r[1]; } }
+  else if (h.startsWith('v-') && PAGES.includes(h.slice(2))) pg = h.slice(2);
+  page = pg; pid = id; tab = tb; resetF(); render(); scrollTo(0,0);
+}
+function go(pg, id, tb){
+  page = pg; pid = id || null; tab = tb || 'sum'; resetF();
+  try { if (location.hash !== '#' + hashOf()) history.pushState({i:++hidx},'','#' + hashOf()); } catch(e){}
+  render(); scrollTo(0,0);
+}
+function setTab(tb){ tab = tb; try { history.replaceState(history.state,'','#' + hashOf()); } catch(e){} render(); }
+function goBack(){
+  if (history.state && history.state.i > 0) history.back();
+  else if (pid) go('projects'); else go('home');
+}
+function start(u, keep){
+  me = u; ST.set(S,u.id); $('#auth').hidden = true; $('#app').hidden = false;
+  if (keep) { hidx = (history.state && history.state.i) || 0; applyHash(); return; }
+  page = 'home'; pid = null; tab = 'sum'; resetF(); hidx = 0;
+  try { history.replaceState({i:0},'','#v-home'); } catch(e){}
+  render(); scrollTo(0,0);
+}
+function out(){ me = null; ST.del(S); try { history.replaceState({i:0},'','#'); } catch(e){} $('#app').hidden = true; $('#auth').hidden = false; $('#af').reset(); setMode('in'); }
+window.addEventListener('popstate', () => { if (me) applyHash(); });
+window.addEventListener('hashchange', () => { if (me) applyHash(); });
+
+/* ---------- pages ---------- */
+function head(title, sub, acts){
+  return (page !== 'home' ? '<button class="back" data-a="back" type="button">← Back</button>' : '') + '<div class="top"><div><div class="eye">Workspace / ' + esc(title) + '</div><h1>' + esc(title) + '</h1><p>' + esc(sub) + '</p></div><div class="acts">' + (acts || '') + '</div></div>';
+}
+const themeBtn = '<button class="ibtn" data-a="theme" type="button" aria-label="Toggle dark mode">' + ic('moon') + '</button>';
+function stat(l,v,f,icn,k){ return '<div class="card"><div class="sh">' + l + '<span class="si ' + (k || '') + '">' + ic(icn) + '</span></div><div class="sn num">' + v + '</div><div class="sf">' + f + '</div></div>'; }
+function greet(){ const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; }
+function budgetBars(A){
+  return A.map(x => '<div class="pb"><div class="pm"><b>' + esc(x.p.title) + '</b><span class="muted num">' + cr(x.a.sp) + ' of ' + cr(x.p.val) + '</span></div>' + bar(x.a.pc, barCls(x.a,x.p), x.p.prog) + '<div class="pm small muted" style="margin-top:6px"><span>' + Math.round(x.a.pc) + '% spent</span><span>' + x.p.prog + '% work done</span></div></div>').join('') +
+    '<div class="lg"><span><i style="background:var(--acc)"></i>Money spent</span><span><i style="background:var(--ink);width:3px;height:12px"></i>Work done</span><span><i style="background:#e8801a"></i>Spend ahead of work</span></div>';
+}
+function home(){
+  const A = mine().map(p => ({p,a:an(p)})), bud = sum(A.map(x => x.p.val)), sp = sum(A.map(x => x.a.sp)), q = sum(A.map(x => x.a.q));
+  const att = A.filter(x => x.a.lv !== 'ok').sort((x,y) => (y.a.lv === 'bad') - (x.a.lv === 'bad') || y.a.score - x.a.score), bad = A.filter(x => x.a.lv === 'bad').length;
+  const tasks = visTasks().filter(k => !k.done).sort((a,b) => a.due.localeCompare(b.due)).slice(0,4);
+  const first = me.name.split(/\s+/)[0];
+  const msg = att.length ? (bad + ' of ' + A.length + (A.length === 1 ? ' project needs' : ' projects need') + ' review, with ' + cr(q) + ' of spending under question.') : 'Every project has passed the automatic checks.';
+  return head('Overview','Here’s what’s happening across your workspace.', themeBtn + (me.role === 'gov' ? '<button class="btn" data-a="newT" type="button">＋ New tender</button>' : '')) +
+    '<section class="welcome"><div><h2>' + greet() + ', ' + esc(first) + '</h2><p>' + esc(msg) + '</p></div><button class="btn" type="button" data-a="' + (att.length ? 'open' : 'nav') + '" data-i="' + (att.length ? att[0].p.id : 'projects') + '">' + (att.length ? 'Review ' + esc(att[0].p.title.split(',')[0]) : 'View projects') + ' →</button></section>' +
+    '<div class="stats">' +
+      stat('Tenders', db.t.length, db.t.filter(t => !t.co).length + ' open for bidding', 'tenders') +
+      stat('Projects', A.length, 'awarded and running', 'projects') +
+      stat('Approved budget', cr(bud), 'across running projects', 'rupee') +
+      stat('Spent so far', cr(sp), (bud ? Math.round(sp / bud * 100) : 0) + '% of approved budget', 'reports', 'ok') +
+      stat('Needs review', bad, cr(q) + ' under question', 'alert', bad ? 'bad' : 'ok') + '</div>' +
+    '<div class="lay"><section class="card"><div class="ct"><div><h3>Budget used vs work done</h3><p>Where money is running ahead of the work</p></div><button class="tl" data-a="nav" data-i="projects" type="button">View projects →</button></div>' + (A.length ? budgetBars(A) : '<div class="empty">No running projects yet. Awarded tenders appear here.</div>') + '</section>' +
+    '<div class="stack"><section class="card"><div class="ct"><div><h3>Needs attention</h3><p>Highest risk first</p></div></div>' +
+      (att.length ? att.map(x => '<button class="row ' + x.a.lv + '" data-a="open" data-i="' + x.p.id + '" type="button"><span class="st"></span><span><b>' + esc(x.p.title) + '</b><span class="small muted">' + esc(x.a.f[0].m) + '</span></span>' + pill(x.a.lv,LB[x.a.lv]) + '</button>').join('') : '<p class="muted">No alerts. Every project has passed the automatic checks.</p>') + '</section>' +
+      '<section class="card"><div class="ct"><div><h3>Recent activity</h3><p>Latest workspace updates</p></div><span class="pill blue">Live log</span></div>' +
+      db.log.slice(0,4).map(l => '<div class="ev"><span class="evd">' + esc((l.w || '?')[0]) + '</span><div><b>' + esc(l.m) + '</b><p>' + esc(l.w) + ' · ' + new Date(l.t).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}) + '</p></div></div>').join('') + '</section></div></div>' +
+    '<section class="card"><div class="ct"><div><h3>Priority tasks</h3><p>Check off tasks as they are done</p></div><button class="tl" data-a="nav" data-i="tasks" type="button">All tasks →</button></div>' + (tasks.length ? tasks.map(taskItem).join('') : '<div class="empty">You are all caught up.</div>') + '</section>';
+}
+/* tenders */
+function tendersList(){
+  const q = F.q.toLowerCase(), g = me.role === 'gov';
+  const L = db.t.filter(t => (!F.sec || t.sec === F.sec) && (!F.ts || (F.ts === 'open' ? !t.co : !!t.co)) && (!q || [t.title,t.no,t.dept,coName(t.co)].some(x => x.toLowerCase().includes(q))));
+  return {n:L.length,html:'<div class="tw"><table><tr><th>Tender</th><th>Sector and department</th><th class="n">Value</th><th>Contractor</th><th>Period</th>' + (g ? '<th></th>' : '') + '</tr>' +
+    (L.map(t => '<tr><td><b>' + esc(t.title) + '</b><small class="mono">' + esc(t.no) + '</small></td><td>' + esc(t.sec) + '<small>' + esc(t.dept) + '</small></td><td class="n num">' + cr(t.val) + '</td><td>' + (t.co ? esc(coName(t.co)) : pill('blue','Open for bidding')) + '</td><td>' + dt(t.s) + '<small>to ' + dt(t.e) + '</small></td>' + (g ? '<td style="white-space:nowrap">' + (t.co ? '' : '<button class="btn sec sm" data-a="award" data-i="' + t.id + '" type="button">Award</button> ') + '<button class="btn out sm" data-a="editT" data-i="' + t.id + '" type="button">Edit</button></td>' : '') + '</tr>').join('') || '<tr><td colspan="6" class="empty">No tenders match. Try a different search or sector.</td></tr>') + '</table></div>'};
+}
+function tenders(){
+  const r = tendersList();
+  return head('Tenders','Which department floated each tender and which company won it', me.role === 'gov' ? '<button class="btn" data-a="newT" type="button">＋ New tender</button>' : '') +
+    '<section class="card"><div class="fb"><input class="search" data-f="q" placeholder="Search tenders…" value="' + esc(F.q) + '" aria-label="Search tenders"><select class="sel" data-f="sec" aria-label="Filter by sector"><option value="">All sectors</option>' + SECT.map(s => '<option ' + (s === F.sec ? 'selected' : '') + '>' + esc(s) + '</option>').join('') + '</select><select class="sel" data-f="ts" aria-label="Filter by status"><option value="">All statuses</option><option value="open" ' + (F.ts === 'open' ? 'selected' : '') + '>Open for bidding</option><option value="awarded" ' + (F.ts === 'awarded' ? 'selected' : '') + '>Awarded</option></select><span class="muted small" id="cnt">' + r.n + ' tender' + (r.n === 1 ? '' : 's') + '</span></div><div id="list">' + r.html + '</div></section>';
+}
+/* projects */
+function projectsList(){
+  const q = F.q.toLowerCase();
+  const L = mine().map(p => ({p,a:an(p)})).filter(x => (!F.ps || x.a.lv === F.ps) && (!q || [x.p.title,x.p.sec,coName(x.p.co),x.p.no].some(s => s.toLowerCase().includes(q))));
+  return {n:L.length,html: L.length ? '<div class="pg">' + L.map(({p,a}) =>
+    '<button class="card pc" data-a="open" data-i="' + p.id + '" type="button"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><h3>' + esc(p.title) + '</h3>' + pill(a.lv,LB[a.lv]) + '</div><div class="mt"><span>' + esc(p.sec) + '</span><span>' + esc(coName(p.co)) + '</span></div><div class="pm small muted" style="margin-top:14px"><span class="num">Spent ' + cr(a.sp) + ' of ' + cr(p.val) + '</span><span>' + p.prog + '% work done</span></div>' + bar(a.pc, barCls(a,p), p.prog) + '<div class="mt" style="margin-top:12px;justify-content:space-between"><span>' + a.f.filter(x => x.s !== 'low').length + ' alert' + (a.f.filter(x => x.s !== 'low').length === 1 ? '' : 's') + '</span><span>Due ' + dt(p.e) + '</span></div></button>').join('') + '</div>' : '<div class="empty">No projects match. Awarded tenders appear here.</div>'};
+}
+function projects(){
+  const r = projectsList();
+  return head('Projects','Spending, progress and alerts for every awarded tender') +
+    '<section class="card"><div class="fb"><input class="search" data-f="q" placeholder="Search projects…" value="' + esc(F.q) + '" aria-label="Search projects"><select class="sel" data-f="ps" aria-label="Filter by health"><option value="">All health levels</option><option value="bad" ' + (F.ps === 'bad' ? 'selected' : '') + '>Needs review</option><option value="warn" ' + (F.ps === 'warn' ? 'selected' : '') + '>Watch</option><option value="ok" ' + (F.ps === 'ok' ? 'selected' : '') + '>Clear</option></select><span class="muted small" id="cnt">' + r.n + ' project' + (r.n === 1 ? '' : 's') + '</span></div><div id="list">' + r.html + '</div></section>';
+}
+/* tasks */
+function taskItem(k){
+  const p = k.p ? getT(k.p) : null, od = !k.done && k.due && k.due < today();
+  return '<label class="task ' + (k.done ? 'done' : '') + '"><input type="checkbox" data-chk="' + esc(k.id) + '" ' + (k.done ? 'checked' : '') + '><span class="tb"><b>' + esc(k.title) + '</b><small>' + esc(p ? p.title : 'No project') + ' · ' + esc(k.as || 'Unassigned') + ' · Due ' + dt(k.due) + '</small></span>' + (od ? pill('bad','Overdue') + ' ' : '') + pill(k.pr === 'High' ? 'bad' : k.pr === 'Medium' ? 'warn' : 'blue', k.pr) + '</label>';
+}
+function tasksList(){
+  const q = F.q.toLowerCase();
+  const L = visTasks().filter(k => (!F.tf || (F.tf === 'open' ? !k.done : k.done)) && (!q || [k.title,k.as || '',(k.p && getT(k.p) ? getT(k.p).title : '')].some(s => s.toLowerCase().includes(q)))).sort((a,b) => a.done - b.done || a.due.localeCompare(b.due));
+  return {n:L.length,html:L.map(taskItem).join('') || '<div class="empty">No matching tasks found.</div>'};
+}
+function tasks(){
+  const r = tasksList();
+  return head('Tasks','Queries raised by officers and follow-ups for site teams','<button class="btn" data-a="newK" type="button">＋ New task</button>') +
+    '<section class="card"><div class="fb"><input class="search" data-f="q" placeholder="Search tasks…" value="' + esc(F.q) + '" aria-label="Search tasks"><select class="sel" data-f="tf" aria-label="Filter tasks"><option value="">All tasks</option><option value="open" ' + (F.tf === 'open' ? 'selected' : '') + '>Open</option><option value="done" ' + (F.tf === 'done' ? 'selected' : '') + '>Completed</option></select><span class="muted small" id="cnt">' + r.n + ' task' + (r.n === 1 ? '' : 's') + '</span></div><div id="list">' + r.html + '</div></section>';
+}
+/* companies */
+function cos(){
+  return head('Companies','Registered contractor companies','<button class="btn" data-a="newCo" type="button">＋ Add company</button>') +
+    '<section class="card"><div class="tw"><table><tr><th>Company</th><th>GST number</th><th>Registration number</th><th>City</th><th class="n">Projects</th><th class="n">Spent</th></tr>' +
+    db.c.map(c => { const p = db.t.filter(t => t.co === c.id); return '<tr><td><b>' + esc(c.n) + '</b></td><td class="mono">' + esc(c.gst || '–') + '</td><td class="mono">' + esc(c.r) + '</td><td>' + esc(c.ct || '–') + '</td><td class="n">' + p.length + '</td><td class="n num">' + cr(sum(p.map(t => an(t).sp))) + '</td></tr>'; }).join('') + '</table></div></section>';
+}
+/* reports */
+function reports(){
+  const A = mine().map(p => ({p,a:an(p)})), bud = sum(A.map(x => x.p.val)), sp = sum(A.map(x => x.a.sp)), q = sum(A.map(x => x.a.q));
+  const avg = A.length ? Math.round(sum(A.map(x => x.p.prog)) / A.length) : 0;
+  const lv = ['ok','warn','bad'].map(k => [k, A.filter(x => x.a.lv === k).length]);
+  const sec = SECT.map(s => [s, sum(A.filter(x => x.p.sec === s).map(x => x.a.sp))]).filter(x => x[1] > 0);
+  const allEx = A.flatMap(x => x.a.ex), vm = {};
+  allEx.forEach(e => { const v = vm[e.v] || (vm[e.v] = {n:0,amt:0}); v.n++; v.amt += e.amt; });
+  const top = Object.entries(vm).sort((a,b) => b[1].amt - a[1].amt).slice(0,6);
+  const cat = CAT.map(c => [c, sum(allEx.filter(e => e.c === c).map(e => e.amt))]).filter(x => x[1] > 0);
+  return head('Reports','Portfolio snapshot of delivery and spending health','<button class="btn" data-a="csvAll" type="button">↓ Export CSV</button>') +
+    '<div class="stats s4">' +
+      stat('Total budget', cr(bud), 'across ' + A.length + ' projects', 'rupee') + stat('Budget used', cr(sp), (bud ? Math.round(sp / bud * 100) : 0) + '% of approved budget', 'reports', 'ok') +
+      stat('Under question', cr(q), 'repeated or missing bills', 'alert', q ? 'bad' : 'ok') + stat('Average work done', avg + '%', 'across all projects', 'check', 'warn') + '</div>' +
+    '<div class="sg"><section class="card"><div class="ct"><div><h3>Project health</h3><p>Current portfolio breakdown</p></div></div>' +
+      lv.map(([k,n]) => '<div style="margin:16px 0"><div class="pm"><span>' + LB[k] + '</span><b>' + n + '</b></div>' + bar(A.length ? n / A.length * 100 : 0, k === 'bad' ? 'bd' : k === 'warn' ? 'wn' : 'gd') + '</div>').join('') + '</section>' +
+    '<section class="card"><div class="ct"><div><h3>Spending by sector</h3><p>Money spent so far</p></div></div>' +
+      (sec.length ? sec.map(([s,v]) => '<div style="margin:16px 0"><div class="pm"><span>' + esc(s) + '</span><b class="num">' + cr(v) + '</b></div>' + bar(sp ? v / sp * 100 : 0) + '</div>').join('') : '<div class="empty">No spending yet.</div>') + '</section>' +
+    '<section class="card"><div class="ct"><div><h3>Spending by category</h3><p>Material, labour, equipment and more</p></div></div>' +
+      (cat.length ? cat.map(([s,v]) => '<div style="margin:16px 0"><div class="pm"><span>' + s + '</span><b class="num">' + cr(v) + '</b></div>' + bar(sp ? v / sp * 100 : 0) + '</div>').join('') : '<div class="empty">No spending yet.</div>') + '</section>' +
+    '<section class="card"><div class="ct"><div><h3>Top vendors</h3><p>Who received the most money</p></div></div>' +
+      (top.length ? '<div class="tw"><table style="min-width:0"><tr><th>Paid to</th><th class="n">Bills</th><th class="n">Amount</th><th class="n">Share</th></tr>' + top.map(([n,v]) => '<tr><td>' + esc(n) + '</td><td class="n">' + v.n + '</td><td class="n num">' + cr(v.amt) + '</td><td class="n">' + (sp ? Math.round(v.amt / sp * 100) : 0) + '%</td></tr>').join('') + '</table></div>' : '<div class="empty">No vendors yet.</div>') + '</section></div>';
+}
+/* settings */
+function settings(){
+  const canSwap = (me.id === 'ugov' || me.id === 'ucomp') && db.u.some(u => u.id === (me.id === 'ugov' ? 'ucomp' : 'ugov'));
+  const dark = (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
+  return head('Settings','Workspace preferences and local data') +
+    '<div class="sg"><section class="card"><div class="ct"><div><h3>Appearance</h3><p>Make Nirmaan Drishti comfortable to use</p></div></div>' +
+      '<div class="srow"><div><b>Dark mode</b><div class="small muted">Switch between light and dark themes</div></div><button class="sw ' + (dark ? 'on' : '') + '" data-a="theme" type="button" aria-label="Toggle dark mode" aria-pressed="' + dark + '"></button></div>' +
+      '<div class="srow"><div><b>Storage</b><div class="small muted">Data is saved in this browser only</div></div><span class="pill ok">Local</span></div></section>' +
+    '<section class="card"><div class="ct"><div><h3>Account</h3><p>Signed in as</p></div></div>' +
+      '<div class="srow"><div><b>' + esc(me.name) + '</b><div class="small muted">' + esc(me.email || '') + '</div></div>' + pill('blue', me.role === 'gov' ? 'Government' : 'Contractor') + '</div>' +
+      '<div class="srow"><div><b>' + esc(me.org) + '</b><div class="small muted">' + (me.role === 'gov' ? 'Floats and awards tenders' : 'Posts daily updates and expenses') + '</div></div></div>' +
+      (canSwap ? '<div class="srow"><div><b>Demo accounts</b><div class="small muted">Jump between the officer and contractor views</div></div><button class="btn out" data-a="swap" type="button">' + (me.id === 'ugov' ? 'Switch to contractor' : 'Switch to officer') + '</button></div>' : '') +
+      '<div class="srow"><div><b>Sign out</b><div class="small muted">Return to the sign-in screen</div></div><button class="btn sec" data-a="out" type="button">Sign out</button></div></section>' +
+    '<section class="card"><div class="ct"><div><h3>Workspace data</h3><p>Back up or reset your sample content</p></div></div>' +
+      '<div class="srow"><div><b>Download backup</b><div class="small muted">All tenders, expenses and updates as JSON</div></div><button class="btn out" data-a="backup" type="button">Export</button></div>' +
+      '<div class="srow"><div><b>Restore sample data</b><div class="small muted">Replaces everything with the demo data</div></div><button class="btn out" data-a="reset" type="button">Restore</button></div></section></div>' +
+    '<p class="small muted" style="margin-top:16px">Privacy note: this prototype stores data in this browser only. It does not sync with a server.</p>';
+}
+
+/* ---------- project detail ---------- */
+function chart(t,ex,R){
+  const days = [...new Set([...ex.map(e => e.d), ...R.map(r => r.d)])].filter(Boolean).sort();
+  if (!days.length || !t.val) return '<p class="muted small">The chart appears after the first expense or daily update.</p>';
+  const W = 640, H = 230, L = 40, T = 16, B = H - 32, Rt = W - 22, X = i => days.length < 2 ? (L + Rt) / 2 : L + (Rt - L) * i / (days.length - 1);
+  const sp = days.map(d => sum(ex.filter(e => e.d <= d).map(e => e.amt)) / t.val * 100);
+  const pr = days.map(d => { const r = R.filter(x => x.d <= d).sort((a,b) => a.d.localeCompare(b.d)).pop(); return r ? r.p : 0; });
+  const m = Math.max(100, ...sp, ...pr), Y = v => B - (B - T) * v / m, pts = a => a.map((v,i) => X(i).toFixed(1) + ',' + Y(v).toFixed(1)).join(' ');
+  const grid = [0,25,50,75,100].map(v => '<line class="gl" x1="' + L + '" x2="' + Rt + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '"/><text x="' + (L - 8) + '" y="' + (Y(v) + 4).toFixed(1) + '" text-anchor="end">' + v + '%</text>').join('');
+  const li = days.length - 1, gap = Math.round(sp[li] - pr[li]);
+  return '<div class="lg" style="margin:0 0 6px"><span><i style="background:var(--acc)"></i>Money spent (% of budget)</span><span><i style="background:var(--ok)"></i>Work done (%)</span></div>' +
+    '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Money spent and work done over time">' + grid +
+    '<polyline points="' + pts(pr) + '" fill="none" stroke="var(--ok)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<polyline points="' + pts(sp) + '" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+    sp.map((v,i) => '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="3.5" fill="var(--acc)"><title>' + dt(days[i]) + ': ' + v.toFixed(1) + '% of budget spent</title></circle>').join('') +
+    '<circle cx="' + X(li).toFixed(1) + '" cy="' + Y(pr[li]).toFixed(1) + '" r="4.5" fill="var(--ok)"/>' +
+    '<text x="' + L + '" y="' + (H - 8) + '">' + dt(days[0]) + '</text><text x="' + Rt + '" y="' + (H - 8) + '" text-anchor="end">' + dt(days[li]) + '</text>' +
+    (gap > 8 ? '<text x="' + (Rt - 8) + '" y="' + (Y((sp[li] + pr[li]) / 2) + 4).toFixed(1) + '" text-anchor="end" style="fill:var(--warn);font-weight:700">Gap ' + gap + ' pts</text>' : '') + '</svg>';
+}
+const thumb = (i,x,l) => '<button class="thb" data-a="img" data-i="' + i + '" type="button" aria-label="' + l + '"><img alt="" src="' + esc(x) + '"></button>';
+function detail(t){
+  const a = an(t), own = me.role === 'co' && t.co === me.co, gov = me.role === 'gov', co = db.c.find(c => c.id === t.co) || {}, by = (x,y) => y.d.localeCompare(x.d);
+  const R = db.rep.filter(r => r.t === t.id).sort(by), D = db.dc.filter(d => d.t === t.id).sort(by), ex = a.ex.slice().sort(by), K = db.tk.filter(k => k.p === t.id).sort((x,y) => x.done - y.done || x.due.localeCompare(y.due));
+  const tabs = [['sum','Summary'],['rep','Daily updates (' + R.length + ')'],['exp','Expenses (' + ex.length + ')'],['doc','Documents (' + D.length + ')'],['tsk','Tasks (' + K.filter(k => !k.done).length + ')'],['his','History']];
+  const cat = CAT.map(c => [c, sum(ex.filter(e => e.c === c).map(e => e.amt))]).filter(x => x[1]);
+  let b = '';
+  if (tab === 'sum') {
+    b = '<div class="stats s5">' +
+      stat('Approved budget', cr(t.val), esc(t.no), 'rupee') + stat('Spent', cr(a.sp), Math.round(a.pc) + '% of budget', 'reports') + stat('Remaining', cr(t.val - a.sp), 'of approved budget', 'check', 'ok') +
+      stat('Work done', t.prog + '%', 'reported by the contractor', 'projects', 'warn') + stat('Risk score', a.score + '/100', LB[a.lv], 'alert', a.lv === 'ok' ? 'ok' : a.lv === 'warn' ? 'warn' : 'bad') + '</div>' +
+      '<div class="lay"><div class="stack"><section class="card"><div class="ct"><h3>Automatic checks</h3>' + pill(a.lv,LB[a.lv]) + '</div>' +
+      (a.f.length ? a.f.map((f,i) => '<div class="fg">' + pill(SV[f.s][0],SV[f.s][1]) + '<span>' + esc(f.m) + (f.x ? ' <button class="lk" data-a="tab" data-i="exp" type="button">See entry</button>' : '') + '</span>' + (gov && f.s !== 'low' ? '<button class="btn out sm" data-a="query" data-i="' + t.id + ':' + i + '" type="button">Raise query</button>' : '<span></span>') + '</div>').join('') : '<p class="muted">All checks passed. Nothing unusual so far.</p>') + '</section>' +
+      '<section class="card"><div class="ct"><h3>Spend vs work done</h3></div>' + chart(t,a.ex,R) + '</section></div>' +
+      '<div class="stack"><section class="card"><div class="ct"><h3>Where the money went</h3></div>' + (cat.length ? cat.map(([c,v]) => '<div style="margin-bottom:12px"><div class="pm"><span>' + c + '</span><b class="num">' + cr(v) + '</b></div>' + bar(v / a.sp * 100) + '</div>').join('') : '<p class="muted">No expenses recorded yet.</p>') + '</section>' +
+      '<section class="card"><div class="ct"><h3>Project details</h3></div><dl class="dl">' + [['Tender number',t.no],['Department',t.dept],['Sector',t.sec],['Location',t.loc || '–'],['Period',dt(t.s) + ' to ' + dt(t.e)],['Contractor',co.n || '–'],['Contractor GST',co.gst || '–'],['Registration number',co.r || '–']].map(([k,v]) => '<div><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>').join('') + '</dl>' + (t.desc ? '<p class="small muted" style="margin-top:14px">Scope of work</p><p>' + esc(t.desc) + '</p>' : '') + '</section></div></div>';
+  } else if (tab === 'rep') {
+    b = R.length ? '<div class="stack">' + R.map(r => '<section class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>' + dt(r.d) + '</b><span>' + pill('blue',r.p + '% done') + ' ' + pill('ok',r.wk + ' workers') + '</span></div><p style="margin-top:8px">' + esc(r.w) + '</p>' + (r.is ? '<p class="small" style="margin-top:6px;color:var(--warn)">Issue: ' + esc(r.is) + '</p>' : '') + '<p class="small muted" style="margin-top:8px">Posted by ' + esc(r.by || 'Site team') + '</p>' + ((r.ph || []).length ? '<div class="ph">' + r.ph.map((x,k) => thumb('r:' + r.id + ':' + k, x, 'Open site photo')).join('') + '</div>' : '') + '</section>').join('') + '</div>' : '<section class="card"><p class="empty">No daily updates yet.' + (own ? ' Post the first one with Add daily update.' : '') + '</p></section>';
+  } else if (tab === 'exp') {
+    b = '<section class="card"><div class="ct"><span class="muted small">' + ex.length + ' entries · ' + inr(a.sp) + ' in total</span><button class="btn sec sm" data-a="csv" data-i="' + t.id + '" type="button">Export CSV</button></div><div class="tw"><table><tr><th>Date</th><th>Category</th><th>Paid to</th><th>Bill</th><th class="n">Amount</th></tr>' +
+      (ex.map(e => '<tr><td>' + dt(e.d) + '</td><td>' + esc(e.c) + '</td><td>' + esc(e.v) + '<small>' + esc(e.pl) + (e.vg ? ' · GST ' + esc(e.vg) : '') + (e.nt ? ' – ' + esc(e.nt) : '') + '</small></td><td>' + (e.bill ? '<span class="mono">' + esc(e.bill) + '</span>' + (dupOf(e) ? ' ' + pill('bad','Duplicate') : '') : pill('warn','No number')) + '<small>' + (e.sc ? '<button class="lk" data-a="img" data-i="e:' + e.id + '" type="button">View scan</button>' : pill('warn','No scan')) + '</small></td><td class="n num">' + inr(e.amt) + '</td></tr>').join('') || '<tr><td colspan="5" class="empty">No expenses yet.' + (own ? ' Use Add expense to record the first one.' : '') + '</td></tr>') + '</table></div></section>';
+  } else if (tab === 'doc') {
+    b = D.length ? '<div class="stack">' + D.map(d => '<section class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>' + esc(d.ti) + '</b>' + pill('blue',d.ty) + '</div><p class="small muted">Uploaded ' + dt(d.d) + ' by ' + esc(d.by || 'Site team') + '</p>' + (d.f && d.f !== 'sample' ? '<div class="ph">' + thumb('d:' + d.id, d.f, 'Open document') + '</div>' : '<p style="margin-top:8px"><button class="lk" data-a="img" data-i="d:' + d.id + '" type="button">Open document</button></p>') + '</section>').join('') + '</div>' : '<section class="card"><p class="empty">No documents yet.' + (own ? ' Upload the work order, agreement or permits with Upload document.' : '') + '</p></section>';
+  } else if (tab === 'tsk') {
+    b = '<section class="card"><div class="ct"><h3>Tasks and queries</h3><button class="btn sec sm" data-a="newK" data-i="' + t.id + '" type="button">＋ New task</button></div>' + (K.length ? K.map(taskItem).join('') : '<div class="empty">No tasks for this project.</div>') + '</section>';
+  } else {
+    const ev = [...R.map(r => ({d:r.d,k:'Daily update',c:'blue',h:r.w,s:r.p + '% done, ' + r.wk + ' workers' + (r.is ? '. Issue: ' + r.is : '')})), ...ex.map(e => ({d:e.d,k:'Expense',c:dupOf(e) || !e.bill ? 'warn' : 'ok',h:inr(e.amt) + ' to ' + e.v,s:e.c + (e.bill ? ', bill ' + e.bill : ', no bill number') + (e.sc ? ', scan attached' : '')})), ...D.map(d => ({d:d.d,k:'Document',c:'blue',h:d.ti,s:d.ty}))].sort(by);
+    b = '<section class="card">' + (ev.map(e => '<div class="ev"><span style="flex:1;min-width:0"><b>' + esc(e.h) + '</b><p>' + esc(e.s) + '</p></span><span style="text-align:right">' + pill(e.c,e.k) + '<p>' + dt(e.d) + '</p></span></div>').join('') || '<p class="empty">Nothing recorded yet.</p>') + '</section>';
+  }
+  return '<button class="back" data-a="back" type="button">← Back</button><div class="top"><div><h1>' + esc(t.title) + '</h1><p><span class="mono">' + esc(t.no) + '</span> · ' + esc(t.dept) + ' · ' + esc(t.sec) + ' · ' + esc(co.n || '') + '</p></div><div class="acts"><button class="btn out" data-a="print" type="button">Print summary</button><button class="btn out" data-a="copy" data-i="' + t.id + '" type="button">Copy summary</button>' +
+    (own ? '<button class="btn sec" data-a="doc" data-i="' + t.id + '" type="button">Upload document</button><button class="btn sec" data-a="exp" data-i="' + t.id + '" type="button">Add expense</button><button class="btn" data-a="rep" data-i="' + t.id + '" type="button">Add daily update</button>' : '') + '</div></div>' +
+    '<div class="dtabs" role="tablist">' + tabs.map(([k,l]) => '<button role="tab" aria-selected="' + (tab === k) + '" class="' + (tab === k ? 'on' : '') + '" data-a="tab" data-i="' + k + '" type="button">' + l + '</button>').join('') + '</div>' + b;
+}
+
+/* ---------- shell ---------- */
+const NAV = [['home','Overview','home'],['tenders','Tenders','tenders'],['projects','Projects','projects'],['tasks','Tasks','tasks'],['cos','Companies','cos'],['reports','Reports','reports'],['settings','Settings','settings']];
+function render(){
+  if (!me) return;
+  if (page === 'cos' && me.role !== 'gov') page = 'home';
+  const openT = visTasks().filter(k => !k.done).length;
+  $('#nav').innerHTML = NAV.filter(n => n[0] !== 'cos' || me.role === 'gov').map(([k,l,i]) => '<button type="button" data-a="nav" data-i="' + k + '" class="' + (page === k ? 'on' : '') + '">' + ic(i) + l + (k === 'tasks' && openT ? '<span class="cnt">' + openT + '</span>' : '') + '</button>').join('');
+  $('#un').textContent = me.name; $('#uo').textContent = me.org; $('#av').textContent = me.name.split(/\s+/).map(x => x[0]).join('').slice(0,2).toUpperCase();
+  const dark = (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
+  $('#sideTheme').innerHTML = ic('moon') + (dark ? 'Light mode' : 'Dark mode');
+  const t = pid && getT(pid);
+  $('#main').innerHTML = (t && page === 'projects') ? detail(t) : ({home,tenders,projects,tasks,cos,reports,settings})[page]();
+}
+function refreshList(){
+  const r = ({tenders:tendersList,projects:projectsList,tasks:tasksList})[page]; if (!r) return;
+  const o = r(), l = $('#list'), c = $('#cnt'); if (!l) return;
+  l.innerHTML = o.html; if (c) c.textContent = o.n + ' ' + ({tenders:'tender',projects:'project',tasks:'task'})[page] + (o.n === 1 ? '' : 's');
+}
+
+/* ---------- modals ---------- */
+const fld = (n,l,type,x) => '<div class="fl"><label for="m_' + n + '">' + l + '</label><input class="in" id="m_' + n + '" name="' + n + '" type="' + (type || 'text') + '" ' + (x || '') + '></div>';
+const ta = (n,l) => '<div class="fl"><label for="m_' + n + '">' + l + '</label><textarea class="in" id="m_' + n + '" name="' + n + '" rows="3"></textarea></div>';
+const slc = (n,l,o,v) => '<div class="fl"><label for="m_' + n + '">' + l + '</label><select class="in" id="m_' + n + '" name="' + n + '">' + o.map(([a,b]) => '<option value="' + esc(a) + '" ' + (a === v ? 'selected' : '') + '>' + esc(b) + '</option>').join('') + '</select></div>';
+const fil = (n,l,x) => '<div class="fl"><label for="m_' + n + '">' + l + '</label><input class="in" id="m_' + n + '" type="file" name="' + n + '" ' + (x || '') + '></div>';
+const closeM = () => { $('#mr').innerHTML = ''; };
+function modal(title, body, ok, fn, wire){
+  $('#mr').innerHTML = '<div class="mb"><form class="md" novalidate role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="mh"><h2>' + esc(title) + '</h2><button type="button" class="x" aria-label="Close">×</button></div><div id="me" class="nt" role="alert" hidden></div>' + body + '<div class="ma"><button type="button" class="btn out cn">' + (ok ? 'Cancel' : 'Close') + '</button>' + (ok ? '<button class="btn" type="submit">' + ok + '</button>' : '') + '</div></form></div>';
+  const f = $('#mr form'); $$('#mr .x,#mr .cn').forEach(b => b.onclick = closeM);
+  $('.mb').onclick = e => { if (e.target.classList.contains('mb')) closeM(); };
+  const first = f.querySelector('input:not([type=hidden]),select,textarea'); if (first) first.focus();
+  if (wire) wire(f);
+  f.onsubmit = async e => {
+    e.preventDefault(); if (!fn) return closeM();
+    const bt = f.querySelector('.ma .btn:not(.out)'); if (bt) bt.disabled = true; let r;
+    try { r = await fn(Object.fromEntries(new FormData(f)), f); } catch(x){ r = (x && x.message) || 'Something went wrong. Try again.'; }
+    if (bt) bt.disabled = false;
+    if (r) { const m = $('#me'); if (m) { m.textContent = r; m.hidden = false; } } else closeM();
+  };
+}
+function confirmM(title, msg, label, fn){ modal(title, '<p class="muted" style="margin-top:10px">' + esc(msg) + '</p>', label, () => { fn(); }, f => { f.querySelector('.ma .btn:not(.out)').classList.add('dng'); }); }
+const coOpts = () => db.c.map(c => [c.id,c.n]);
+const projOpts = () => mine().map(p => [p.id,p.title]);
+function newCo(){
+  modal('Add company', fld('n','Company name') + fld('gst','GST number','text','maxlength="15" placeholder="08AABCR1234K1Z5"') + fld('r','Registration number') + fld('ct','City'), 'Add company', d => {
+    const n = d.n.trim(), r = d.r.trim(), g = d.gst.trim().toUpperCase();
+    if (!n || !r) return 'Enter the company name and registration number.';
+    if (!gok(g)) return 'Enter a valid 15-character GST number, for example 08AABCR1234K1Z5.';
+    if (db.c.some(c => same(c.r,r) || c.gst === g)) return 'A company with this registration or GST number already exists.';
+    db.c.push({id:uid(),n,r,gst:g,ct:d.ct.trim()}); log('Added company ' + n); save(); render(); toast('Company added.');
+  });
+}
+function tenderForm(t){
+  t = t || {};
+  return fld('title','Tender title','text','value="' + esc(t.title || '') + '"') + fld('loc','Location','text','value="' + esc(t.loc || '') + '"') +
+    '<div class="fl"><label for="m_desc">Scope of work</label><textarea class="in" id="m_desc" name="desc" rows="3">' + esc(t.desc || '') + '</textarea></div>' +
+    '<div class="mg">' + slc('sec','Sector',SECT.map(s => [s,s]),t.sec) + fld('val','Estimated value (₹)','number','min="1" step="any" value="' + (t.val || '') + '"') + fld('s','Start date','date','value="' + (t.s || '') + '"') + fld('e','End date','date','value="' + (t.e || '') + '"') + '</div>';
+}
+function tenderCheck(d){
+  const v = +d.val; if (!d.title.trim()) return 'Enter a tender title.'; if (!(v > 0)) return 'Enter the estimated value in rupees.';
+  if (!d.s || !d.e || d.e <= d.s) return 'Choose a start date and an end date after it.'; return '';
+}
+function newT(){
+  modal('New tender', tenderForm() + slc('co','Award to',[['','Leave open for bidding'],...coOpts()]), 'Create tender', d => {
+    const er = tenderCheck(d); if (er) return er;
+    db.t.push({id:uid(),no:'TN/' + new Date().getFullYear() + '/' + String(db.t.length + 1).padStart(3,'0'),title:d.title.trim(),dept:me.org,sec:d.sec,val:+d.val,co:d.co,s:d.s,e:d.e,prog:0,loc:d.loc.trim(),desc:d.desc.trim()});
+    log('Floated tender ' + d.title.trim()); save(); render(); toast('Tender created.');
+  });
+}
+function editT(id){
+  const t = getT(id); if (!t) return;
+  modal('Edit tender', tenderForm(t) + '<div class="fl"><button class="btn dng" type="button" id="delT">Delete tender</button></div>', 'Save changes', d => {
+    const er = tenderCheck(d); if (er) return er;
+    Object.assign(t,{title:d.title.trim(),loc:d.loc.trim(),desc:d.desc.trim(),sec:d.sec,val:+d.val,s:d.s,e:d.e}); log('Updated tender ' + t.title); save(); render(); toast('Tender updated.');
+  }, f => { f.querySelector('#delT').onclick = () => confirmM('Delete this tender?','The tender and all its expenses, updates, documents and tasks will be removed from this browser.','Delete', () => {
+    db.t = db.t.filter(x => x.id !== id); db.exp = db.exp.filter(x => x.t !== id); db.rep = db.rep.filter(x => x.t !== id); db.dc = db.dc.filter(x => x.t !== id); db.tk = db.tk.filter(x => x.p !== id);
+    if (pid === id) pid = null; log('Deleted tender ' + t.title); save(); render(); toast('Tender deleted.'); }); });
+}
+function award(id){
+  const t = getT(id); if (!db.c.length) return toast('Add a company first.');
+  modal('Award tender', '<p class="muted small" style="margin-top:8px">' + esc(t.title) + '</p>' + slc('co','Contractor company',coOpts()), 'Award', d => { t.co = d.co; log('Awarded ' + t.title + ' to ' + coName(d.co)); save(); render(); toast('Tender awarded.'); });
+}
+function newK(pre){
+  const L = projOpts(); if (!L.length && me.role !== 'gov') return toast('You have no running projects yet.');
+  const opts = me.role === 'gov' ? [['','No project'],...L] : L;
+  modal('Create task', fld('title','Task title','text','maxlength="140" placeholder="What needs to be done?"') + slc('p','Project',opts,pre) + '<div class="mg">' + fld('as','Assigned to','text','placeholder="Name or company"') + fld('due','Due date','date','value="' + addDays(7) + '"') + slc('pr','Priority',[['Medium','Medium'],['High','High'],['Low','Low']]) + '</div>', 'Create task', d => {
+    if (!d.title.trim()) return 'Enter a task title.';
+    const p = d.p ? getT(d.p) : null;
+    db.tk.unshift({id:uid(),title:d.title.trim(),p:d.p || '',due:d.due || addDays(7),pr:d.pr,done:false,as:d.as.trim() || (p ? coName(p.co) : 'Unassigned'),by:me.name});
+    log('Created task ' + d.title.trim()); save(); render(); toast('Task created.');
+  });
+}
+function shrink(f){
+  return new Promise((ok,no) => {
+    if (!/^image\//.test(f.type)) return no(new Error('Choose a photo or scan (JPG, PNG or WebP).'));
+    if (f.size > 15e6) return no(new Error('This image is over 15 MB. Use a smaller photo.'));
+    const u = URL.createObjectURL(f), im = new Image();
+    im.onload = () => { const k = Math.min(1, 1000 / Math.max(im.width,im.height)), c = document.createElement('canvas'); c.width = Math.max(1,Math.round(im.width * k)); c.height = Math.max(1,Math.round(im.height * k)); c.getContext('2d').drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(u); ok(c.toDataURL('image/jpeg',.7)); };
+    im.onerror = () => { URL.revokeObjectURL(u); no(new Error('This image could not be read.')); };
+    im.src = u;
+  });
+}
+function liveCheck(t,f){
+  const v = n => f.elements[n].value.trim(), amt = +v('amt'), bill = v('bill'), vg = v('vg').toUpperCase(), out = [], sp = an(t).sp;
+  const o = bill ? db.exp.find(x => same(x.bill,bill)) : null;
+  if (o) { const ot = getT(o.t); out.push(['high','Bill ' + bill + ' is already booked on ' + (ot ? ot.title : 'another project') + ' on ' + dt(o.d) + ' for ' + inr(o.amt) + '.']); }
+  if (!bill && amt > 0) out.push(['med','No bill number. This entry will be flagged for review.']);
+  if (amt >= 1e6 && amt % 5e5 === 0) out.push(['low','Round figure. Officers will see a note on this entry.']);
+  if (amt > 0 && sp + amt > t.val) out.push(['high','This would take spending ' + inr(sp + amt - t.val) + ' over the approved budget.']);
+  if (vg && !gok(vg)) out.push(['med','Vendor GST number is not in the 15-character format.']);
+  return out;
+}
+function exp(id){
+  const t = getT(id);
+  modal('Add expense', '<div class="mg">' + fld('d','Date','date','value="' + today() + '" max="' + today() + '"') + slc('c','Category',CAT.map(c => [c,c])) + fld('amt','Amount with GST (₹)','number','min="1" step="any"') + fld('bill','Bill number','text','placeholder="e.g. B-2291"') + fld('v','Paid to') + fld('vg','Vendor GST number','text','maxlength="15"') + '</div>' + fld('pl','Site or location') + fil('sc','Scanned bill (photo or scan)','accept="image/*"') + fld('nt','Note (optional)') +
+    '<div class="live" id="live"><b class="small">Live check</b><div class="small muted">Type an amount or bill number. Problems show up here before you save.</div></div>', 'Save expense',
+    async (d,f) => {
+      const amt = +d.amt, vg = d.vg.trim().toUpperCase();
+      if (!(amt > 0)) return 'Enter the amount in rupees.'; if (!d.v.trim()) return 'Enter who was paid.';
+      if (!d.d || d.d > today()) return 'Choose a date that is not in the future.';
+      if (vg && !gok(vg)) return 'The vendor GST number is not valid. It has 15 characters, like 08AABCR1234K1Z5.';
+      const fi = f.elements.sc.files[0], sc = fi ? await shrink(fi) : '';
+      db.exp.push({id:uid(),t:id,d:d.d,c:d.c,amt,v:d.v.trim(),vg,pl:d.pl.trim(),bill:d.bill.trim(),nt:d.nt.trim(),sc,by:me.name});
+      log('Added a ' + inr(amt) + ' expense to ' + t.title); save(); render();
+      const n = an(t).f.filter(x => x.s !== 'low').length; toast(n ? 'Expense saved. This project now shows ' + n + ' alert' + (n > 1 ? 's' : '') + '.' : 'Expense saved.');
+    },
+    f => { const upd = () => { const r = liveCheck(t,f); $('#live').innerHTML = '<b class="small">Live check</b>' + (r.length ? r.map(x => '<div class="fg">' + pill(SV[x[0]][0],SV[x[0]][1]) + '<span>' + esc(x[1]) + '</span></div>').join('') : '<div class="small" style="color:var(--ok);margin-top:4px">No problems found so far.</div>'); }; f.addEventListener('input',upd); f.addEventListener('change',upd); });
+}
+function rep(id){
+  const t = getT(id), a = an(t);
+  modal('Daily update', '<p class="muted small" style="margin-top:8px">Budget used so far ' + inr(a.sp) + '. Remaining ' + inr(t.val - a.sp) + '. Both update when expenses are added.</p><div class="mg">' + fld('d','Date','date','value="' + today() + '" max="' + today() + '"') + fld('wk','Workers on site','number','min="0" step="1"') + '</div>' + ta('w','Work done today') + ta('is','Problems or delays (optional)') + fld('p','Total work completed so far (%)','number','min="' + t.prog + '" max="100" value="' + t.prog + '"') + fil('ph','Site photos (up to 4)','accept="image/*" multiple'), 'Post update', async (d,f) => {
+    const p = Math.round(+d.p), wk = Math.round(+d.wk || 0);
+    if (!d.w.trim()) return 'Describe the work done today.'; if (!d.d || d.d > today()) return 'Choose a date that is not in the future.';
+    if (!(p >= t.prog && p <= 100)) return 'Total progress can only go up, between ' + t.prog + ' and 100.';
+    const ph = []; for (const x of [...f.elements.ph.files].slice(0,4)) ph.push(await shrink(x));
+    t.prog = p; db.rep.push({id:uid(),t:id,d:d.d,w:d.w.trim(),is:d.is.trim(),wk,p,ph,by:me.name}); log('Posted a daily update on ' + t.title + ' (' + p + '% done)'); save(); render(); toast('Daily update posted.');
+  });
+}
+function doc(id){
+  modal('Upload document', fld('ti','Document title') + slc('ty','Type',['Work order','Agreement','Permit or approval','Measurement book','Other'].map(x => [x,x])) + fil('f','File (photo or scan)','accept="image/*"'), 'Upload', async (d,f) => {
+    const fi = f.elements.f.files[0]; if (!d.ti.trim()) return 'Enter a document title.'; if (!fi) return 'Choose a file to upload.';
+    const v = await shrink(fi); db.dc.push({id:uid(),t:id,d:today(),ti:d.ti.trim(),ty:d.ty,f:v,by:me.name}); log('Uploaded ' + d.ti.trim() + ' to ' + getT(id).title); save(); render(); toast('Document uploaded.');
+  });
+}
+function view(i){
+  const [k,id,n] = i.split(':'); let title = 'Image', body = '';
+  if (k === 'e') { const e = db.exp.find(x => x.id === id); if (!e) return; title = 'Scanned bill';
+    body = e.sc === 'sample' ? '<div class="doc"><b>TAX INVOICE</b><div class="small muted">Sample scan for this demo</div><hr><div class="pm"><span>Bill no.</span><b class="mono">' + esc(e.bill) + '</b></div><div class="pm"><span>Vendor</span><b>' + esc(e.v) + '</b></div><div class="pm"><span>Date</span><b>' + dt(e.d) + '</b></div><hr><div class="pm"><span>Total with GST</span><b class="num">' + inr(e.amt) + '</b></div></div>' : '<img class="big" alt="Scanned bill" src="' + esc(e.sc) + '">'; }
+  else if (k === 'r') { const r = db.rep.find(x => x.id === id); if (!r || !r.ph[+n]) return; title = 'Site photo'; body = '<img class="big" alt="Site photo" src="' + esc(r.ph[+n]) + '">'; }
+  else { const d = db.dc.find(x => x.id === id); if (!d) return; title = d.ti; body = d.f === 'sample' ? '<div class="doc"><b>' + esc(d.ti) + '</b><div class="small muted">Sample document for this demo</div><hr><p class="small">Work order issued to the contractor for the project. Scope, schedule and payment terms are set out in the signed agreement.</p></div>' : '<img class="big" alt="' + esc(d.ti) + '" src="' + esc(d.f) + '">'; }
+  modal(title, body, '', null);
+}
+/* exports */
+const q = v => '"' + String(v ?? '').replace(/"/g,'""') + '"';
+function exportM(name, content, type){
+  xfer = {name,content,type};
+  modal('Export ready', '<p class="muted small" style="margin-top:8px"><span class="mono">' + esc(name) + '</span> · ' + content.length.toLocaleString('en-IN') + ' characters</p><div class="fl"><textarea class="in" id="xbox" rows="8" readonly aria-label="File contents">' + esc(content.length > 6000 ? content.slice(0,6000) + '\n…' : content) + '</textarea></div><div class="ma" style="justify-content:flex-start"><button class="btn" type="button" data-a="dl">Download file</button><button class="btn sec" type="button" data-a="cp">Copy text</button></div>', '', null);
+}
+function csvOf(ids){
+  const ex = db.exp.filter(e => ids.includes(e.t)).sort((a,b) => a.d.localeCompare(b.d));
+  return '﻿' + [['Tender','Date','Category','Paid to','Vendor GST','Bill number','Site','Amount (INR)','Note','Scan attached'].map(q).join(',')].concat(ex.map(e => [(getT(e.t) || {}).no,e.d,e.c,e.v,e.vg,e.bill,e.pl,e.amt,e.nt,e.sc ? 'Yes' : 'No'].map(q).join(','))).join('\r\n');
+}
+function download(){
+  if (!xfer) return;
+  try { const b = new Blob([xfer.content],{type:xfer.type}), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = xfer.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u),1500); toast('Download started.'); }
+  catch(e){ toast('Download is blocked here. Use Copy text instead.'); }
+}
+async function copyText(s){
+  try { await navigator.clipboard.writeText(s); toast('Copied.'); return true; }
+  catch(e){ const b = $('#xbox'); if (b) { b.focus(); b.select(); } toast('Press Ctrl+C to copy the selected text.'); return false; }
+}
+function summary(t){
+  const a = an(t);
+  return t.title + ' (' + t.no + ')\nContractor: ' + coName(t.co) + '\nBudget ' + inr(t.val) + ', spent ' + inr(a.sp) + ' (' + Math.round(a.pc) + '%), work done ' + t.prog + '%\nStatus: ' + LB[a.lv] + ', risk score ' + a.score + '/100\n' + (a.f.length ? a.f.map(f => '- ' + f.m).join('\n') : '- All checks passed');
+}
+async function copySummary(id){
+  const s = summary(getT(id));
+  try { await navigator.clipboard.writeText(s); toast('Summary copied.'); }
+  catch(e){ modal('Project summary', '<div class="fl"><textarea class="in" id="xbox" rows="9" readonly>' + esc(s) + '</textarea></div>', '', null, () => setTimeout(() => { const b = $('#xbox'); if (b) { b.focus(); b.select(); } },30)); }
+}
+function raiseQuery(i){
+  const [tid,ix] = i.split(':'), t = getT(tid); if (!t) return; const f = an(t).f[+ix]; if (!f) return;
+  const title = 'Explain: ' + f.m.replace(/\.$/,'');
+  if (db.tk.some(k => k.p === tid && k.title === title && !k.done)) return toast('This query is already open.');
+  db.tk.unshift({id:uid(),title,p:tid,due:addDays(7),pr:f.s === 'high' ? 'High' : 'Medium',done:false,as:coName(t.co),by:me.name});
+  log('Raised a query with ' + coName(t.co) + ' on ' + t.title); save(); render(); toast('Query sent to ' + coName(t.co) + '. It is in their tasks.');
+}
+
+/* ---------- events ---------- */
+function setTheme(t){ document.documentElement.dataset.theme = t; ST.set(TH,t); }
+const curTheme = () => document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a, i = b.dataset.i;
+  if (a === 'nav') go(i);
+  else if (a === 'open') { if (i) go('projects', i); }
+  else if (a === 'back') goBack();
+  else if (a === 'tab') setTab(i);
+  else if (a === 'theme') { setTheme(curTheme() === 'dark' ? 'light' : 'dark'); render(); }
+  else if (a === 'out') out();
+  else if (a === 'swap') { const u = db.u.find(x => x.id === (me.id === 'ugov' ? 'ucomp' : 'ugov')); if (u) start(u); }
+  else if (a === 'newCo') newCo(); else if (a === 'newT') newT(); else if (a === 'editT') editT(i); else if (a === 'award') award(i);
+  else if (a === 'newK') newK(i); else if (a === 'exp') exp(i); else if (a === 'rep') rep(i); else if (a === 'doc') doc(i); else if (a === 'img') view(i);
+  else if (a === 'query') raiseQuery(i); else if (a === 'copy') copySummary(i); else if (a === 'print') window.print();
+  else if (a === 'csv') { const t = getT(i); exportM((t.no || 'project').replace(/\//g,'-') + '-expenses.csv', csvOf([i]), 'text/csv;charset=utf-8'); }
+  else if (a === 'csvAll') exportM('nirmaan-drishti-expenses.csv', csvOf(mine().map(p => p.id)), 'text/csv;charset=utf-8');
+  else if (a === 'backup') exportM('nirmaan-drishti-backup.json', JSON.stringify(db,null,2), 'application/json');
+  else if (a === 'dl') download(); else if (a === 'cp') { if (xfer) copyText(xfer.content); }
+  else if (a === 'reset') confirmM('Restore sample data?','This replaces the data in this browser with the demo data. Accounts you created will be removed.','Restore', () => { const keep = me.id; ST.del(K); db = seed(); const u = db.u.find(x => x.id === keep) || db.u[0]; save(); start(u); toast('Sample data restored.'); });
+});
+document.addEventListener('input', e => { const f = e.target.dataset && e.target.dataset.f; if (f === 'q') { F.q = e.target.value; refreshList(); } });
+document.addEventListener('change', e => {
+  const f = e.target.dataset && e.target.dataset.f; if (f && f !== 'q') { F[f] = e.target.value; refreshList(); return; }
+  const c = e.target.dataset && e.target.dataset.chk; if (c) { const k = db.tk.find(x => x.id === c); if (!k) return; k.done = e.target.checked; log(k.done ? 'Completed task: ' + k.title : 'Reopened task: ' + k.title); save(); render(); toast(k.done ? 'Task marked complete.' : 'Task reopened.'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeM(); });
+
+/* ---------- sign in ---------- */
+function setMode(m){
+  mode = m; $('#ae').hidden = true;
+  $('#at').textContent = m === 'in' ? 'Welcome back' : 'Create your account';
+  $('#as').textContent = m === 'in' ? 'Sign in to continue to your workspace.' : 'Set up your Nirmaan Drishti account.';
+  $('#su').hidden = m === 'in'; $('#bk').hidden = m === 'in'; $('#sb').textContent = m === 'in' ? 'Sign in' : 'Create account';
+  $('#sw').textContent = m === 'in' ? 'New here? Create an account' : 'Already registered? Sign in';
+  $('#pw').autocomplete = m === 'in' ? 'current-password' : 'new-password'; roleUi();
+}
+function roleUi(){ const g = $('#ro').value === 'gov'; $('#ol').textContent = g ? 'Department name' : 'Company name'; $('#rgw').hidden = g; }
+const err = m => { $('#ae').textContent = m; $('#ae').hidden = false; };
+$('#sw').onclick = () => setMode(mode === 'in' ? 'up' : 'in');
+$('#bk').onclick = () => setMode('in');
+$('#ro').onchange = roleUi;
+$$('[data-d]').forEach(b => b.onclick = () => { const u = db.u.find(x => x.id === b.dataset.d); if (u) start(u); else err('Sample accounts were removed. Use Create an account, or restore sample data from Settings.'); });
+$('#af').onsubmit = async e => {
+  e.preventDefault(); $('#ae').hidden = true; const v = x => $(x).value.trim();
+  const em = v('#em').toLowerCase(), pw = $('#pw').value;
+  if (!/^\S+@\S+\.\S+$/.test(em)) return err('Enter a valid email address.');
+  if (pw.length < 6) return err('Use a password of at least 6 characters.');
+  if (mode === 'in') {
+    const u = db.u.find(x => x.email === em);
+    const ok = u && (u.h ? u.h === await hash(em,pw) : (['ugov','ucomp'].includes(u.id) && pw === 'demo123'));
+    if (!ok) return err('Email or password is incorrect. For a quick look, use a demo account.');
+    return start(u);
+  }
+  const nm = v('#nm'), role = $('#ro').value, org = v('#og'), reg = v('#rg'), gs = v('#gs').toUpperCase();
+  if (!nm) return err('Enter your full name.');
+  if (!org) return err(role === 'gov' ? 'Enter your department name.' : 'Enter your company name.');
+  if (db.u.some(x => x.email === em)) return err('An account with this email already exists. Sign in instead.');
+  let co;
+  if (role === 'co') {
+    if (!reg) return err('Enter the company registration number.');
+    if (!gok(gs)) return err('Enter a valid 15-character GST number, for example 08AABCR1234K1Z5.');
+    if (db.c.some(c => same(c.r,reg) || c.gst === gs)) return err('This registration or GST number is already on Nirmaan Drishti. Ask your company admin to invite you.');
+    co = uid(); db.c.push({id:co,n:org,r:reg,gst:gs,ct:''});
+  }
+  const u = {id:uid(),name:nm,email:em,role,org,...(co ? {co} : {}),h:await hash(em,pw)};
+  db.u.push(u); me = u; log('Joined Nirmaan Drishti as ' + (role === 'co' ? 'a contractor' : 'a department'), nm); save(); start(u);
+};
+
+/* ---------- boot ---------- */
+{ const th = ST.get(TH); if (th === 'dark' || th === 'light') setTheme(th); }
+const su = db.u.find(u => u.id === ST.get(S));
+if (su) start(su, true); else { $('#auth').hidden = false; setMode('in'); }
+})();
+</script>
+
+</body></html>
